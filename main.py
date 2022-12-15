@@ -3,11 +3,9 @@ from info import MENU, resources
 
 
 w, m, c = resources
-money_earned = 0
-
+profit = 0
 
 # All Functions
-# TODO: Check if resources are sufficient?
 def check_resources(user_choice):
   """Checks to see if there's enough resources and prints a statement if no."""
   menu = MENU[user_choice]['ingredients']
@@ -18,18 +16,16 @@ def check_resources(user_choice):
           start_coffee_machine()
 
 
-# TODO: Print report.
 def print_report():
   print(f"""
   Water: {resources[w]} mL\n
   Milk: {resources[m]} mL\n
   Coffee: {resources[c]} mL\n
-  Money: ${money_earned: 0.2f}\n
+  Money: ${profit: 0.2f}\n
   """)
   start_coffee_machine()
 
 
-# TODO: Process coins.
 def process_coins():
   print("Please insert coins.")
   quarters = int(input('How many quarters?: '))
@@ -41,42 +37,39 @@ def process_coins():
   return round(total, 2)
 
 
-# TODO: Check if transaction is successful?
 def transaction_check(user_amount, user_choice):
-  global money_earned
+  global profit
   item_cost = MENU[user_choice]['cost']
   if user_amount >= item_cost:
-      money_earned += item_cost
-      change = user_amount - item_cost
-      make_coffee(user_choice)
-      return f"Here is ${round(change, 2)} in change.\n" \
-              f"Here is your latte ☕. Enjoy!"
+    profit += item_cost
+    change = user_amount - item_cost
+    print(f"Here is ${round(change, 2)} in change.")
+    return True
   else:
-      return "Sorry that's not enough. Money refunded."
+    print("Sorry that's not enough. Money refunded.")
+    return False
 
 
-# TODO: Make coffee.
 def make_coffee(user_choice):
   ingredients = MENU[user_choice]['ingredients']
   for item in ingredients:
-      amount_used = ingredients[item]
-      resources[item] -= amount_used
+    resources[item] -= ingredients[item]
+  print(f"Here is your {user_choice} ☕. Enjoy!")
 
 
-# TODO: Run coffee machine.
 def start_coffee_machine():
   """Main code base that calls all other functions to run coffee machine"""
   choice = input("What would you like? (espresso/latte/cappuccino): ")
-  if choice == 'report':
-    print_report()
-  # Turns off (exits) machine
-  elif choice == 'off':
+  if choice == 'off':
     quit()
-  check_resources(choice)
-  amount = process_coins()
-  check = transaction_check(amount, choice)
-  print(check)
-  start_coffee_machine()
+  elif choice == 'report':
+    print_report()
+  else:
+    check_resources(choice)
+    amount = process_coins()
+    if transaction_check(amount, choice):
+      make_coffee(choice)
+      start_coffee_machine()
 
 
 print(logo)
